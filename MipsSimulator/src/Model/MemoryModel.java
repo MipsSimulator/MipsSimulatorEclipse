@@ -94,6 +94,15 @@ public class MemoryModel {
 
        return memoryModel;
    }
+   
+   public int getPc()
+   {
+	   return 0;
+   }
+   public void setPc(int pc)
+   {
+	
+   }
 
 
 
