@@ -14,7 +14,6 @@ public class Executor {
 	/*
 	J, 
 	BEQ,
-	ADDI, 
 	SW, 
 	LW
 	MUL
@@ -67,6 +66,27 @@ public class Executor {
 	}
 	
 	/**
+	 * Executes an I type instruction determined by its OP code
+	 * @param op the opcode of the instruction
+	 * @param rt the target register to store value in 
+	 * @param rs the register value that imm value will be added too
+	 * @param imm the number that will be added to rs
+	 */
+	public void executeI(int op, int rt, int rs, int imm)
+	{
+		switch(op)
+		{
+		//ADDI instruction
+		case 8:
+			rs = memory.getRegister(rs);
+			memory.setRegister(rs + imm, rt);
+			break;
+		
+		}
+		
+	}
+	
+	/**
 	 * Shifts the value in rt by shamt bits to the left
 	 * @param rd destination register to store result 
 	 * @param rt target register value to shift
@@ -76,7 +96,7 @@ public class Executor {
 	{
 		rt = memory.getRegister(rt);
 		
-		memory.setRegister(rt<<shamt, rt);
+		memory.setRegister(rt<<shamt, rd);
 	}
 	
 	/**
