@@ -2,14 +2,14 @@ package Model;
 
 /**
 * Model in the MVC architecture
-* The MemoryModel holds the state of the Assembly Simulator
+* The Main Memory Model holds the state of the Assembly Simulator
 */
-public class MainMemoryModel {
+public class MainMemoryModel extends AbstractModel {
 
    /**
     * The single instance of the MemoryModel
     */
-   private MainMemoryModel memoryModel;
+   private static MainMemoryModel memoryModel;
    
    /**
     * The main memory. Access is allowed only at every word, which is 32 bits.
@@ -62,6 +62,12 @@ public class MainMemoryModel {
    private int pc;
 
    /**
+    * When the program gets built, this will be set to the address of the last instruction in memory.
+    */
+   private int lastInstruction;
+   
+   
+   /**
     * Initializes the memory model. Sets the stack pointer, frame pointer, and
     * global pointer to their respective locations in memory.
     */
@@ -84,7 +90,7 @@ public class MainMemoryModel {
     * to exist at a time)
     * @return
     */
-   public MainMemoryModel getInstance(){
+   public static MainMemoryModel getInstance(){
        if(memoryModel == null){
            memoryModel = new MainMemoryModel();
            return memoryModel;
@@ -143,6 +149,21 @@ public class MainMemoryModel {
    public void setSp(int memoryAddress) {this.gp = memoryAddress; }
    
    
+   /**
+    * Store the address of the last location in memory. This occurs when the program gets built.
+    * @param memoryAddress
+    */
+   public void setLastInstrAddress(int memoryAddress){ this.lastInstruction = memoryAddress;}
+   
+   
+   /**
+    * Gets the address of the last instruction in memory.
+    * @param memoryAddress - address of the last instruction
+    * @return - last instruction in memory.
+    */
+   public int getLastInstrAddress() { return this.lastInstruction;}
+   
+   
    
    
    
@@ -150,18 +171,18 @@ public class MainMemoryModel {
     * [Read Only] Used to read main memory at the given memory address.
     * This can be used as load word.
     * @param memoryAddress
-    * @return
+    * @return data at that memory address in the form of an int.
     */
-   public int getMemory(int memoryAddress) { return mainMemory[memoryAddress]; }
+   public int loadMemory(int memoryAddress) { return mainMemory[memoryAddress]; }
    
    
    /**
     * [Write Only] used to write to memory at the given address.
     * This can be used as store word.
-    * @param memoryAddress
-    * @return
+    * @param memoryAddress - 32bit word addressable
+    * @param value - value to be stored at the given memoryAddress
     */
-   public int setMemory(int memoryAddress) { return mainMemory[memoryAddress]; }
+   public void storeMemory(int memoryAddress, int value) { mainMemory[memoryAddress] = value; }
    
 
 }

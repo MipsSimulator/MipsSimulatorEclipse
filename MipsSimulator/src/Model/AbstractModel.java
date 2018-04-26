@@ -1,5 +1,7 @@
 package Model;
 import java.util.ArrayList;
+
+import Executor.Event;
 import View.*;
 
 import java.util.ArrayList;
@@ -11,6 +13,9 @@ import java.util.ArrayList;
  */
 abstract public class AbstractModel {
     
+	/**
+	 * Model Listeners is anyone that wants to be notified when changes occur in the model.
+	 */
     private ArrayList<ModelListener> listeners;
     
     /**
@@ -41,7 +46,7 @@ abstract public class AbstractModel {
      * @param event A ModelEvent containing information about the change that
      * occurred in the model. ,
      */
-    public void notifyChanged(ModelEvent event){
+    public void notifyChanged(Event event){
         for(ModelListener listener: listeners){
             listener.update(event);
         }
