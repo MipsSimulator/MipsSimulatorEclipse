@@ -5,12 +5,12 @@ package Model;
  * @author Ben
  *
  */
-public class RegisterModel {
+public class RegisterModel extends AbstractModel{
 	
 	/**
 	 * The single RegisterModel instance. (Singleton)
 	 */
-	private RegisterModel registerModel;
+	private static RegisterModel registerModel;
 	
 	/**
 	 * int array that is initialized to 32 to hold the MIPS 32 registers.
@@ -28,7 +28,7 @@ public class RegisterModel {
 	 * Singleton method that returns the single instance of RegisterModel
 	 * @return RegisterModel singleton
 	 */
-	public RegisterModel getInstance() {
+	public static RegisterModel getInstance() {
 		if(registerModel == null) {
 			registerModel = new RegisterModel();
 		}
