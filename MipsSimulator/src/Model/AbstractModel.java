@@ -1,7 +1,7 @@
 package Model;
+import java.awt.Event;
 import java.util.ArrayList;
 
-import Executor.Event;
 import View.*;
 
 import java.util.ArrayList;
