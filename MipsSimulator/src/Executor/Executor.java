@@ -1,5 +1,7 @@
 package Executor;
 
+import java.util.Queue;
+
 import Model.MainMemoryModel;
 import Model.RegisterModel;
 
@@ -172,17 +174,19 @@ import Model.RegisterModel;
 		
 		/**
 		 * Builds the code; Stores the instructions in the Main Memory Model, at the bottom of
-		 * the text segment. 
+		 * the text segment. Note the actual pc doesn't get updated, this is just to have a temporary pointer
+		 * to the main memory.
 		 * @param instructions - array of instructions as ints. Needs to be converted to binary to decode
 		 * the instruction.
 		 */
-		public void build(int[] instructions) {
+		public void build(Queue<Integer> instructions) {
 			int pc = memoryModel.getPc();
 			
+			int size = instructions.size();
 			// copy of program counter is incremented every iteration to store instruction at the next
 			// address
-			for(int i = 0; i<instructions.length; i++, pc++) {
-				memoryModel.storeMemory(pc,instructions[i]);
+			for(int i = 0; i<size; i++, pc++) {
+				memoryModel.storeMemory(pc,instructions.poll());
 			}
 			
 		}
@@ -200,21 +204,19 @@ import Model.RegisterModel;
 			// Loop and constraints of program execution
 			while(isExecuting && memoryModel.getPc() < lastInstrAddress) {
 				
-//				int pc = memoryModel.getPc();
-//				// 5, 5, 12, 25, 2
-//				int[] instruction = CodeParser.parseInstruction(memoryModel.loadMemory(pc));
-//				
-//				switch(instruction[0]) {
-//				
-//				case R: executeR(instruction)
-//					memoryModel.setPc(memoryModel.getPc()+1);
-//				case I:
-//					memoryModel.setPc(memoryModel.getPc()+1);
-//				case J
-//					memoryModel.setPc(memoryModel.getPc()+1);
-//				
+				int pc = memoryModel.getPc();
+				// 5, 5, 12, 25, 2
+				Instruction instruction = CodeParser.parseInstruction(memoryModel.loadMemory(pc));
 				
-				}
+				
+				
+				
+				Instruction instruction = new RTypeInstruction(myParsedInstruction);
+				
+				instruction.execute();
+				
+				
+			
 			}
 		
 			
