@@ -160,6 +160,8 @@ public static int getRegFromStr(String reg)
 				System.out.println(split[i]);
 			}
 			
+			//random comment
+			
 			//HashMap<token[i],Integer> hashMap = new HashMap;
 			int opcode = hashMap_op.get(opString);
 			
