@@ -1,5 +1,10 @@
 package Model;
 
+import java.util.Queue;
+import CodeParser.*;
+
+import com.sun.org.apache.bcel.internal.generic.Instruction;
+
 /**
  * Main model Executor contains sub models memory and register
  * Interprets memory addresses and modifies values in registers and memory
@@ -9,9 +14,12 @@ package Model;
 public class Executor {
 	
 	private boolean isExecuting;
-	private MemoryModel memory;
-	//private RegisterModel register;
-	
+	private MainMemoryModel memory;
+	private RegisterModel register;
+
+	//git add --all 
+	//git commit -m ""
+	//git push origin Development
 	/*
 	J, 
 	BEQ,
@@ -111,9 +119,9 @@ public class Executor {
 	 */
 	private void sll(int rd, int rt, int shamt)
 	{
-		rt = memory.getRegister(rt);
+		rt = register.getRegister(rt);
 		
-		memory.setRegister(rt<<shamt, rd);
+		register.setRegister(rt<<shamt, rd);
 	}
 	
 	/**
@@ -124,9 +132,9 @@ public class Executor {
 	 */
 	private void srl(int rd, int rt, int shamt)
 	{
-		rt = memory.getRegister(rt);
+		rt = register.getRegister(rt);
 		
-		memory.setRegister(rt>>shamt, rd);
+		register.setRegister(rt>>shamt, rd);
 	}
 	
 	/**
@@ -138,10 +146,10 @@ public class Executor {
 	 */
 	private void add(int rd, int rs, int rt)
 	{
-		rt = memory.getRegister(rt);
-		rs = memory.getRegister(rs);
+		rt = register.getRegister(rt);
+		rs = register.getRegister(rs);
 		
-		memory.setRegister(rs + rt, rd);
+		register.setRegister(rs + rt, rd);
 	}
 	
 	/**
@@ -153,10 +161,10 @@ public class Executor {
 	 */
 	private void sub(int rd, int rs, int rt)
 	{
-		rt = memory.getRegister(rt);
-		rs = memory.getRegister(rs);
+		rt = register.getRegister(rt);
+		rs = register.getRegister(rs);
 		
-		memory.setRegister(rs - rt, rd);
+		register.setRegister(rs - rt, rd);
 	}
 	
 	/**
@@ -168,10 +176,10 @@ public class Executor {
 	 */
 	private void and(int rd, int rs, int rt)
 	{
-		rt = memory.getRegister(rt); 
-		rs = memory.getRegister(rs);
+		rt = register.getRegister(rt); 
+		rs = register.getRegister(rs);
 		
-		memory.setRegister(rs&rt, rd);
+		register.setRegister(rs&rt, rd);
 	}
 
 	/**
@@ -183,10 +191,10 @@ public class Executor {
 	 */
 	private void or(int rd, int rs, int rt)
 	{
-		rt = memory.getRegister(rt);
-		rs = memory.getRegister(rs);
+		rt = register.getRegister(rt);
+		rs = register.getRegister(rs);
 		
-		memory.setRegister(rs|rt, rd);
+		register.setRegister(rs|rt, rd);
 	}
 	
 	
@@ -198,18 +206,29 @@ public class Executor {
 	 */
 	private void addi(int rd, int rt, int imm)
 	{
-		rt = memory.getRegister(rt);
+		rt = register.getRegister(rt);
 
-		memory.setRegister(rt + imm, rd);
+		register.setRegister(rt + imm, rd);
 	}
 	
 	/**
-	 * Stores a value from memory 
+	 * Places a value from memory into a register
 	 * @param rd
 	 * @param rt
 	 * @param imm
 	 */
 	private void lw(int rd, int rt, int imm)
+	{
+		
+	}
+
+	/**
+	 * Places a value from register into memory 
+	 * @param rd
+	 * @param rt
+	 * @param imm
+	 */
+	private void sw(int rd, int rt, int imm)
 	{
 		
 	}
@@ -223,13 +242,13 @@ public class Executor {
 	 * the instruction.
 	 */
 	public void build(Queue<Integer> instructions) {
-		int pc = memoryModel.getPc();
+		int pc = memory.getPc();
 		
 		int size = instructions.size();
 		// copy of program counter is incremented every iteration to store instruction at the next
 		// address
 		for(int i = 0; i<size; i++, pc++) {
-			memoryModel.storeMemory(pc,instructions.poll());
+			memory.storeMemory(pc,instructions.poll());
 		}
 		
 	}
@@ -242,19 +261,19 @@ public class Executor {
 	public void compile() {
 		
 		isExecuting = true;
-		int lastInstrAddress = memoryModel.getLastInstrAddress();
+		int lastInstrAddress = memory.getLastInstrAddress();
 		
 		// Loop and constraints of program execution
-		while(isExecuting && memoryModel.getPc() < lastInstrAddress) {
+		while(isExecuting && memory.getPc() < lastInstrAddress) {
 			
-			int pc = memoryModel.getPc();
-			Instruction instruction = CodeParser.parseInstruction(memoryModel.loadMemory(pc));
-			
-			
-			switch(instruction.getType()) {
+			int pc = memory.getPc();
+			//Instruction instruction = CodeParser.parseInstruction(memory.loadMemory(pc));
 			
 			
-			}
+			//switch(instruction.getType()) {
+			
+			
+			//}
 			
 			
 		
