@@ -1,4 +1,4 @@
-package Executor;
+gipackage Executor;
 
 import Model.MainMemoryModel;
 import Model.RegisterModel;
