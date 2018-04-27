@@ -2,7 +2,7 @@ package Executor;
 
 
 /**
- * Packages up both the type of instruction and the actual instruction.
+ * Packages up both the type of instruction and the actual instruction via an int[].
  * @author Ben
  *
  */

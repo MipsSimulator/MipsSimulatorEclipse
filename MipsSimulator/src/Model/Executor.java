@@ -2,8 +2,7 @@ package Model;
 
 import java.util.Queue;
 import CodeParser.*;
-
-import com.sun.org.apache.bcel.internal.generic.Instruction;
+import Executor.Instruction;
 
 /**
  * Main model Executor contains sub models memory and register
@@ -16,6 +15,7 @@ public class Executor {
 	private boolean isExecuting;
 	private MainMemoryModel memory;
 	private RegisterModel register;
+	private static Executor executor;
 
 	//git add --all 
 	//git commit -m ""
@@ -24,6 +24,23 @@ public class Executor {
 	J, 
 	BEQ,
 	 */
+	
+	private  Executor() {	
+		this.memory = MainMemoryModel.getInstance();
+		this.register = RegisterModel.getInstance();
+	}
+	
+	
+	/**
+	 * Singleton of executor
+	 * @return
+	 */
+	public static Executor getInstance() {
+		if(executor == null) {
+			executor = new Executor();
+		}
+		return executor;
+	}
 	
 	
 	/**
@@ -233,6 +250,14 @@ public class Executor {
 		
 	}
 	
+	/**
+	 * Jumps to the address that gets passed
+	 * @param address
+	 */
+	private void j(int address) {
+		memory.setPc(address);
+	}
+	
 	
 	/**
 	 * Builds the code; Stores the instructions in the Main Memory Model, at the bottom of
@@ -265,21 +290,76 @@ public class Executor {
 		
 		// Loop and constraints of program execution
 		while(isExecuting && memory.getPc() < lastInstrAddress) {
-			
-			int pc = memory.getPc();
-			//Instruction instruction = CodeParser.parseInstruction(memory.loadMemory(pc));
-			
-			
-			//switch(instruction.getType()) {
-			
-			
-			//}
-			
-			
-		
+			executeInstruction();
 		}
 	
-		
 	}
+	
+	
+	
+	/**
+	 * Executes J type instructions
+	 * @param 
+	 */
+	public void executeJ(int[] instruction) {
+		
+		int op = instruction[0];
+		int psuedoDirectAddress = instruction[1];
+		
+		
+		switch(op) {
+		
+			case 2:
+				j(psuedoDirectAddress);
+			
+		}
+	}
+	
+	
+	/**
+	 * Set the execution flag. If it is true, then the program is executing and vice versa.
+	 * @param isExecuting
+	 */
+	public void setIsExecuting(boolean isExecuting) {
+		this.isExecuting = isExecuting;
+	}
+	
+	/**
+	 * Find out whether the program is executing
+	 * @return the execution flag
+	 */
+	public boolean isExecuting() { return isExecuting;}
+	
+	
+	
+	/**
+	 * Executes one instruction.
+	 */
+	public void executeInstruction() {
+		
+		int pc = memory.getPc();
+		Instruction instruction = CodeParser.parseInstruction(memory.loadMemory(pc));
+		
+		/**
+		 * Execute R, I, or J type instructions
+		 */
+		switch(instruction.getType()) {
+			
+			case Instruction.RTYPE: 
+				executeR(instruction.getInstruction());
+				break;
+			case Instruction.ITYPE:
+				executeI(instruction.getInstruction());
+				break;
+			case Instruction.JTYPE:
+				executeJ(instruction.getInstruction());
+				break;
+		}
+	}
+	
+	
+	
+	
+	
 	
 }
