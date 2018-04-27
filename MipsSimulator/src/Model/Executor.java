@@ -7,17 +7,14 @@ package Model;
  * @author James
  */
 public class Executor {
-
+	
+	private boolean isExecuting;
 	private MemoryModel memory;
 	//private RegisterModel register;
 	
 	/*
 	J, 
 	BEQ,
-	SW, 
-	LW
-	MUL
-	NOP
 	 */
 	
 	
@@ -62,6 +59,11 @@ public class Executor {
 			case 37:
 				or(rd,rs,rt);
 				break;
+				
+			default:
+				
+				System.out.println("ERR: Instruction not yet implemented!");
+				break;
 		}
 	}
 	
@@ -76,11 +78,26 @@ public class Executor {
 	{
 		switch(op)
 		{
-		//ADDI instruction
+		// ADDI instruction
 		case 8:
-			rs = memory.getRegister(rs);
-			memory.setRegister(rs + imm, rt);
+			addi(rs, rt, imm);
 			break;
+			
+		// SW instruction
+		case 42:
+			
+			break;
+			
+		// LW instruction
+		case 35:
+			
+			break;
+		
+		// MUL instruction 
+		case 28: 
+			
+			break; 
+			
 		
 		}
 		
@@ -158,7 +175,7 @@ public class Executor {
 	}
 
 	/**
-	 * Stores the value of rs AND rt in rd
+	 * Stores the value of rs OR rt in rd
 	 * 
 	 * @param rd destination register
 	 * @param rs source register 1
@@ -172,5 +189,78 @@ public class Executor {
 		memory.setRegister(rs|rt, rd);
 	}
 	
+	
+	/**
+	 * Stores value of rt + imm in register rd 
+	 * @param rd 
+	 * @param rt 
+	 * @param imm
+	 */
+	private void addi(int rd, int rt, int imm)
+	{
+		rt = memory.getRegister(rt);
+
+		memory.setRegister(rt + imm, rd);
+	}
+	
+	/**
+	 * Stores a value from memory 
+	 * @param rd
+	 * @param rt
+	 * @param imm
+	 */
+	private void lw(int rd, int rt, int imm)
+	{
+		
+	}
+	
+	
+	/**
+	 * Builds the code; Stores the instructions in the Main Memory Model, at the bottom of
+	 * the text segment. Note the actual pc doesn't get updated, this is just to have a temporary pointer
+	 * to the main memory.
+	 * @param instructions - array of instructions as ints. Needs to be converted to binary to decode
+	 * the instruction.
+	 */
+	public void build(Queue<Integer> instructions) {
+		int pc = memoryModel.getPc();
+		
+		int size = instructions.size();
+		// copy of program counter is incremented every iteration to store instruction at the next
+		// address
+		for(int i = 0; i<size; i++, pc++) {
+			memoryModel.storeMemory(pc,instructions.poll());
+		}
+		
+	}
+	
+	/**
+	 * Begins compilation of the assembly program by fetching the instructions from memory.
+	 * Once it has the instruction and is decoded by the CodeParser and the actual instruction
+	 * execution is delegated to a method in this class. Either R,I, or J type methods.
+	 */
+	public void compile() {
+		
+		isExecuting = true;
+		int lastInstrAddress = memoryModel.getLastInstrAddress();
+		
+		// Loop and constraints of program execution
+		while(isExecuting && memoryModel.getPc() < lastInstrAddress) {
+			
+			int pc = memoryModel.getPc();
+			Instruction instruction = CodeParser.parseInstruction(memoryModel.loadMemory(pc));
+			
+			
+			switch(instruction.getType()) {
+			
+			
+			}
+			
+			
+		
+		}
+	
+		
+	}
 	
 }
