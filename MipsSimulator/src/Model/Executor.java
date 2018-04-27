@@ -50,8 +50,14 @@ public class Executor {
 	 * @param rt The second source register
 	 * @param shamt shift amount, for 
 	 */
-	public void executeR(int rd, int rs, int rt, int shamt, int func)
+	public void executeR(int instruction[])
 	{
+		int rs = instruction[1];
+		int rt = instruction[2];
+		int rd = instruction[3];
+		int shamt = instruction[4];
+		int func = instruction[5];
+		
 		// Determines the operation based on func value
 		switch(func)
 		{
@@ -221,11 +227,10 @@ public class Executor {
 	 * @param rt 
 	 * @param imm
 	 */
-	private void addi(int rd, int rt, int imm)
+	private void addi(int rt, int rs, int imm)
 	{
-		rt = register.getRegister(rt);
-
-		register.setRegister(rt + imm, rd);
+		rs = register.getRegister(rs);
+		register.setRegister(rs + imm, rt);
 	}
 	
 	/**
@@ -234,20 +239,25 @@ public class Executor {
 	 * @param rt
 	 * @param imm
 	 */
-	private void lw(int rd, int rt, int imm)
+	private void lw(int rt, int rs, int imm)
 	{
-		
+		int lval;
+		rs = register.getRegister(rs);
+		lval = memory.loadMemory(rs + imm);
+		register.setRegister(lval, rt);
 	}
 
 	/**
 	 * Places a value from register into memory 
-	 * @param rd
+	 * @param rs
 	 * @param rt
 	 * @param imm
 	 */
-	private void sw(int rd, int rt, int imm)
+	private void sw(int rt, int rs, int imm)
 	{
-		
+		rt = register.getRegister(rt);
+		rs = register.getRegister(rs);
+		memory.storeMemory(rs + imm, rt);
 	}
 	
 	/**
@@ -357,9 +367,5 @@ public class Executor {
 		}
 	}
 	
-	
-	
-	
-	
-	
+
 }
