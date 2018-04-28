@@ -17,14 +17,6 @@ public class Executor {
 	private RegisterModel register;
 	private CodeParser codeParser;
 	private static Executor executor;
-
-	//git add --all 
-	//git commit -m ""
-	//git push origin Development
-	/*
-	J, 
-	BEQ,
-	 */
 	
 	private  Executor() {	
 		this.memory = MainMemoryModel.getInstance();
@@ -73,6 +65,11 @@ public class Executor {
 				srl(rd, rt, shamt);
 				break;
 				
+			// MULT instruction
+			case 24: 
+				mult(rd,rt);
+				break;
+				
 			// ADD instruction
 			case 32: 
 				add(rd, rs, rt);
@@ -107,23 +104,24 @@ public class Executor {
 	 * @param rs the register value that imm value will be added too
 	 * @param imm the number that will be added to rs
 	 */
-	public void executeI(int op, int rt, int rs, int imm)
+	public void executeI(int instruction[])
 	{
+		int op = instruction[0];
+		int rs = instruction[1];
+		int rt = instruction[2];
+		int imm = instruction[3];
+		
+		
 		switch(op)
 		{
+		// BEQ instruction
+		case 4: 
+			beq(rs, rt, imm);
+			break;
+		
 		// ADDI instruction
 		case 8:
 			addi(rs, rt, imm);
-			break;
-			
-		// SW instruction
-		case 42:
-			
-			break;
-			
-		// LW instruction
-		case 35:
-			
 			break;
 		
 		// MUL instruction 
@@ -131,7 +129,16 @@ public class Executor {
 			
 			break; 
 			
-		
+		// LW instruction
+		case 35:
+			lw(rs, rt, imm);
+			break;
+					
+		// SW instruction
+		case 42:
+			sw(rs, rt, imm);
+			break;
+			
 		}
 		
 	}
@@ -160,6 +167,40 @@ public class Executor {
 		rt = register.getRegister(rt);
 		
 		register.setRegister(rt>>shamt, rd);
+	}
+	
+	/**
+	 * Multiplies the value in register rd by the value of register rt
+	 * @param rd - destination register
+	 * @param rt - target register (value multiplied to rd)
+	 */
+	private void mult(int rd, int rt)
+	{
+		String hi, lo;
+		
+		rt = register.getRegister(rt);
+		rd = register.getRegister(rd);
+		
+		String bits = Integer.toBinaryString(rt * rd);
+		
+		if (bits.length() > 32)
+		{
+			lo = bits.substring( 32, bits.length());
+			hi = bits.substring(0,31);
+			register.setRegister(Integer.parseInt(lo,2),33);
+			register.setRegister(Integer.parseInt(hi,2),34);
+		}
+
+	}
+	
+	
+	private void beq(int rs, int rt, int imm)
+	{
+		if (register.getRegister(rs) == register.getRegister(rt))
+		{
+			// needs to change program counter
+			register.setPc(register.getPc() + imm * 4);
+		}
 	}
 	
 	/**
@@ -221,7 +262,6 @@ public class Executor {
 		
 		register.setRegister(rs|rt, rd);
 	}
-	
 	
 	/**
 	 * Stores value of rt + imm in register rd 
@@ -361,7 +401,7 @@ public class Executor {
 				executeR(instruction.getInstruction());
 				break;
 			case Instruction.ITYPE:
-//				executeI(instruction.getInstruction());
+				executeI(instruction.getInstruction());
 				break;
 			case Instruction.JTYPE:
 				executeJ(instruction.getInstruction());
