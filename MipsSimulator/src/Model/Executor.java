@@ -180,16 +180,15 @@ public class Executor {
 		rt = register.getRegister(rt);
 		rd = register.getRegister(rd);
 		
-		String bits = Integer.toBinaryString(rt * rd);
+		String bits = Long.toBinaryString(rt*rd);
 		
 		if (bits.length() > 32)
 		{
 			lo = bits.substring( 32, bits.length());
-			hi = bits.substring(0,31);
-			register.setRegister(Integer.parseInt(lo,2),33);
-			register.setRegister(Integer.parseInt(hi,2),34);
+			hi = bits.substring(0,32);
+			register.setLo(Integer.parseInt(lo,2));
+			register.setHi(Integer.parseInt(hi,2));
 		}
-
 	}
 	
 	
@@ -275,7 +274,7 @@ public class Executor {
 	}
 	
 	/**
-	 * Places a value from memory into a register
+	 * Places a value from memory into a register`	
 	 * @param rd
 	 * @param rt
 	 * @param imm

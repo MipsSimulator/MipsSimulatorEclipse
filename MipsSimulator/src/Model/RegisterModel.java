@@ -24,6 +24,18 @@ public class RegisterModel extends AbstractModel{
 	 */
 	private int pc;
 	
+	/**
+	 * Special purpose register, hi
+	 */
+	private int hi;
+	
+	/**
+	 * Special purpose register, lo
+	 */
+	private int lo;
+	
+	
+	
 	private RegisterModel() {
 		registerFile = new int[32];
 		for(int i = 0; i<32; i++)
@@ -88,6 +100,19 @@ public class RegisterModel extends AbstractModel{
     */
    public int getPc() { return this.pc;}
    
+   /**
+    * Gets the hi special purpose register contents
+    * @return
+    */
+   public int getHi() { return this.hi;}
+   
+   
+   /**
+    * Gets the lo special purpose register contents
+    */
+   public int getLo() { return this.lo;}
+   
+   
    
    /**
     * Updates the program counter
@@ -114,6 +139,18 @@ public class RegisterModel extends AbstractModel{
     * @param memoryAddress
     */
    public void setSp(int memoryAddress) {this.registerFile[29] = memoryAddress; }	
+   
+   /**
+    * Sets the hi special purpose register
+    * @param value
+    */
+   public void setHi(int value) { this.hi = value;}
+   
+   /**
+    * Sets the lo special purpose register
+    * @param value
+    */
+   public void setLo(int value) { this.lo = value; }
    
    
    public int[] getRegisterFile() { return registerFile;}
