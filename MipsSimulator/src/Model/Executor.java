@@ -191,7 +191,12 @@ public class Executor {
 		}
 	}
 	
-	
+     /**
+     * Moves PC to immediate line if value in register rs == value in rt
+     * @param  rs the first register to compare
+     * @param  rt the second register to compare
+     * @param  imm line to jump to
+     */
 	private void beq(int rs, int rt, int imm)
 	{
 		if (register.getRegister(rs) == register.getRegister(rt))
