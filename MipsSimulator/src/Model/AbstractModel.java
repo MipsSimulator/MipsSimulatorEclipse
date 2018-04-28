@@ -48,7 +48,7 @@ abstract public class AbstractModel {
      */
     public void notifyChanged(Event event){
         for(ModelListener listener: listeners){
-            listener.update(event);
+//            listener.update(event);
         }
     }
    

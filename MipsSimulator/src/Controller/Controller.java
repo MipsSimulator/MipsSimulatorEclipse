@@ -1,5 +1,6 @@
 package Controller;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import Model.*;
 import java.util.Queue;
@@ -30,9 +31,17 @@ public class Controller {
 	/**
 	 * Instantiates the executor and code parser.
 	 */
+	
+	/**
+	 * Debugger runs line by line if chosen by the user to do so and examines the memory.
+	 */
+	private Debugger debugger;
+	
 	public Controller() {
-		executor = new Executor();
-		codeParser = new CodeParser();
+		
+		executor = Executor.getInstance();
+		codeParser = CodeParser.getInstance();
+		debugger = Debugger.getInstance();
 		// instantiate the view here and pass it an instance of controller.
 	}
 	
@@ -45,15 +54,34 @@ public class Controller {
 	 */
 	public void operation(String operation) {
 		
+	
 		// Builds the program. Stores the instructions in memory.
 		if(operation.equals("build")) {
-			Queue<Integer> instructions = CodeParser.parseInstructions();
-			executor.build(instructions);
+			Queue<Integer> instructions;
+			try {
+				instructions = codeParser.parseCode();
+				executor.build(instructions);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		// Compiles the program. Calls the executor to fetch instructions from memory and execute them.
-		else if(operation.equals("compile")) {
-			executor.compile();
+		else if(operation.equals("run")) {
+			executor.run();
+		}
+		
+		else if(operation.equals("breakpoint")) {
+			debugger.breakPoint(5); // TODO change this to take other values
+		}
+		
+		else if(operation.equals("continue")) {
+			debugger.continueRunning();
+		}
+		
+		else if(operation.equals("step")) {
+			debugger.step();
 		}
 		
 		// Other events that may happen in the program..

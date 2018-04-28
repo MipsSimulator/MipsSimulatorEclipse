@@ -15,6 +15,7 @@ public class Executor {
 	private boolean isExecuting;
 	private MainMemoryModel memory;
 	private RegisterModel register;
+	private CodeParser codeParser;
 	private static Executor executor;
 
 	//git add --all 
@@ -28,6 +29,7 @@ public class Executor {
 	private  Executor() {	
 		this.memory = MainMemoryModel.getInstance();
 		this.register = RegisterModel.getInstance();
+		this.codeParser = CodeParser.getInstance();
 	}
 	
 	
@@ -265,7 +267,7 @@ public class Executor {
 	 * @param address
 	 */
 	private void j(int address) {
-		memory.setPc(address);
+		register.setPc(address);
 	}
 	
 	
@@ -277,7 +279,7 @@ public class Executor {
 	 * the instruction.
 	 */
 	public void build(Queue<Integer> instructions) {
-		int pc = memory.getPc();
+		int pc = register.getPc();
 		
 		int size = instructions.size();
 		// copy of program counter is incremented every iteration to store instruction at the next
@@ -289,17 +291,17 @@ public class Executor {
 	}
 	
 	/**
-	 * Begins compilation of the assembly program by fetching the instructions from memory.
+	 * Begins execution of the assembly program by fetching the instructions from memory.
 	 * Once it has the instruction and is decoded by the CodeParser and the actual instruction
 	 * execution is delegated to a method in this class. Either R,I, or J type methods.
 	 */
-	public void compile() {
+	public void run() {
 		
 		isExecuting = true;
 		int lastInstrAddress = memory.getLastInstrAddress();
 		
 		// Loop and constraints of program execution
-		while(isExecuting && memory.getPc() < lastInstrAddress) {
+		while(isExecuting && register.getPc() < lastInstrAddress) {
 			executeInstruction();
 		}
 	
@@ -347,8 +349,8 @@ public class Executor {
 	 */
 	public void executeInstruction() {
 		
-		int pc = memory.getPc();
-		Instruction instruction = CodeParser.parseInstruction(memory.loadMemory(pc));
+		int pc = register.getPc();
+		Instruction instruction = codeParser.parseInstruction(memory.loadMemory(pc));
 		
 		/**
 		 * Execute R, I, or J type instructions
@@ -359,7 +361,7 @@ public class Executor {
 				executeR(instruction.getInstruction());
 				break;
 			case Instruction.ITYPE:
-				executeI(instruction.getInstruction());
+//				executeI(instruction.getInstruction());
 				break;
 			case Instruction.JTYPE:
 				executeJ(instruction.getInstruction());

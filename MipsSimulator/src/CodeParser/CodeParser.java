@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
+
+import Executor.*;
+
 import java.lang.String;
 
 public class CodeParser {
@@ -16,6 +19,10 @@ public class CodeParser {
 	private static HashMap<String,Integer> hashMap_op;
 	private static HashMap<String,Integer> hashMap_funct;
 	private static HashMap<String,Integer> hashMap_loops;
+	
+	private CodeParser() {
+		
+	}
 	
 	public static CodeParser getInstance() {
 		
@@ -161,7 +168,7 @@ public class CodeParser {
 		file.close();
 	}
 	
-	public static Queue<Integer> parseCode() throws FileNotFoundException
+	public Queue<Integer> parseCode() throws FileNotFoundException
 	{
 		
 		Scanner file = new Scanner (new File ("C:\\eclipse\\EclipseWorkspace\\Parsing_MIPS\\assembly_demo.txt"));
@@ -268,10 +275,11 @@ public class CodeParser {
 				tempInstruct_J[1] = hashMap_loops.get(temp);
 				
 				BinaryOP = Integer.toBinaryString(tempInstruct_J[0]);
-				BinaryRS = Integer.toBinaryString(tempInstruct_J[1]);
+				BinaryLABEL = Integer.toBinaryString(tempInstruct_J[1]);
+				
 				
 				BinaryOP = appendBit(BinaryOP, 6);
-				BinaryRS = appendBit(BinaryLABEL, 26);
+				BinaryLABEL = appendBit(BinaryLABEL, 26);
 				
 				FullBinary.append(BinaryOP);
 				FullBinary.append(BinaryLABEL);
@@ -310,13 +318,16 @@ public class CodeParser {
 				instructions.add(Integer.parseInt(instructionBinary, 2));
 				
 				
-			}		
+			}
+			memIndex++;
 		}
-		memIndex++;
+		
+		return instructions;
+	
 	}
 
 
-	int[] convertBin (int intNUM)
+	public Instruction parseInstruction (int intNUM)
 	{
 		
 		String fullBinary = Integer.toBinaryString(intNUM);
@@ -368,5 +379,8 @@ public class CodeParser {
 			}
 			return new Instruction(Instruction.JTYPE, intArray);
 		}
+		
+		// TODO: Add handling for when op-code isn't matched.
+		return null;
 	}
 }

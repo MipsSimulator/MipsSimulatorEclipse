@@ -15,19 +15,27 @@ import Model.RegisterModel;
 public class Debugger {
 	
 	private MainMemoryModel memory;
-	private RegisterModel register;
+	private RegisterModel registerModel;
 	private Executor executor;
 	
+	private static Debugger debugger;
 	private int breakPoint;
 	
-	public Debugger() {
+	private Debugger() {
 		
 		memory = MainMemoryModel.getInstance();
-		register = RegisterModel.getInstance();
+		registerModel = RegisterModel.getInstance();
 		executor = Executor.getInstance();
 		
 		breakPoint = Integer.MAX_VALUE;
 		// empty
+	}
+	
+	public static Debugger getInstance() {
+		if(debugger == null)
+			debugger = new Debugger();
+		
+		return debugger;
 	}
 	
 	
@@ -55,20 +63,21 @@ public class Debugger {
 	 */
 	public void step() {
 		
-		this.breakPoint = memory.getPc()+1;
+		this.breakPoint = registerModel.getPc()+1;
 		compile();
 		update();
 		
 	}
 	
 	
-	public void compile() {
+	private void compile() {
 		
 		executor.setIsExecuting(true);
 		int lastInstrAddress = memory.getLastInstrAddress();
 		
 		// Loop and constraints of program execution
-		while(executor.isExecuting() && memory.getPc() < lastInstrAddress && memory.getPc() < breakPoint) {
+		while(executor.isExecuting() && registerModel.getPc() < lastInstrAddress && registerModel.getPc() < breakPoint) {
+			
 			executor.executeInstruction();
 		}
 		

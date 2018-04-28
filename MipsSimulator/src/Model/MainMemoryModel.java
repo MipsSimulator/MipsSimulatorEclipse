@@ -41,27 +41,6 @@ public class MainMemoryModel extends AbstractModel {
    public static final int TEXT_BOTTOM_ADDRESS = 524288;
 
    /**
-    * Stack Pointer. Holds index (address) to the stack.
-    */
-   private int sp;
-   /**
-    * Frame Pointer Holds index (address) to the frame.
-    */
-   private int fp;
-
-   /**
-    * Global pointer that points to the top of the static data segment for easy access
-    * to that segment.
-    */
-   private int gp;
-
-   /**
-    * Program counter. Address is initially set to the bottom of the text segment. Keeps track
-    * of the address to the current instruction in the Main Memory.
-    */
-   private int pc;
-
-   /**
     * When the program gets built, this will be set to the address of the last instruction in memory.
     */
    private int lastInstruction;
@@ -75,10 +54,6 @@ public class MainMemoryModel extends AbstractModel {
 
        memoryModel = new MainMemoryModel();
        mainMemory = new int[MEMORY_SIZE];
-
-       this.sp = MEMORY_SIZE-1;
-       this.gp = STATIC_TOP_ADDRESS;
-       this.pc = TEXT_BOTTOM_ADDRESS;
 
    }
 
@@ -100,53 +75,6 @@ public class MainMemoryModel extends AbstractModel {
    }
    
    
-   /**
-    * 
-    * @return stack pointer
-    */
-   public int getSp() { return this.sp;}
-   /**
-    * 
-    * @return frame pointer
-    */
-   public int getFp() { return this.fp;}
-   /**
-    * 
-    * @return global pointer
-    */
-   public int getGp() { return this.gp;}
-   /**
-    * 
-    * @return program counter
-    */
-   public int getPc() { return this.pc;}
-   
-   
-   /**
-    * Updates the program counter
-    * @param memoryAddress - The address the PC should be set to.
-    */
-   public void setPc(int memoryAddress) { this.pc = memoryAddress ;}
-   
-   /**
-    * Updates the frame pointer
-    * @param memoryAddress
-    */
-   public void setFp(int memoryAddress) {this.fp = memoryAddress; }
-   
-
-   /**
-    * Updates the global pointer
-    * @param memoryAddress
-    */
-   public void setGp(int memoryAddress) {this.gp = memoryAddress; }
-   
-   
-   /**
-    * Updates the stack pointer
-    * @param memoryAddress
-    */
-   public void setSp(int memoryAddress) {this.gp = memoryAddress; }
    
    
    /**
