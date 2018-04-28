@@ -1,6 +1,11 @@
 package View;
 
+import Executor.DebugEvent;
+
 public interface ModelListener {
 	
-//	public void update(Event event);
+
+	public void update(DebugEvent event);
+	
+	
 }

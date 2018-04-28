@@ -17,9 +17,9 @@ public class DebugEvent {
 	/**
 	 * The values of the last 10 accessed memory locations.
 	 */
-	private Queue<Integer> memValues;
+	private Queue<Long> memValues;
 	
-	public DebugEvent(int[] registerFile, Queue<Integer> memValues, Queue<Integer> memAddresses){
+	public DebugEvent(int[] registerFile, Queue<Long> memValues, Queue<Integer> memAddresses){
 		
 		this.registerFile = registerFile;
 		this.memAddresses = memAddresses;
@@ -44,7 +44,7 @@ public class DebugEvent {
 	 * The values of the last 10 accessed memory locations.
 	 * @return The values of the last 10 accessed memory locations.
 	 */
-	public Queue<Integer> getMemValues(){return memValues;}
+	public Queue<Long> getMemValues(){return memValues;}
 	
 	
 	

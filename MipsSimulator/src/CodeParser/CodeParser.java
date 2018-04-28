@@ -21,7 +21,8 @@ public class CodeParser {
 	private static HashMap<String,Integer> hashMap_loops;
 	
 	private CodeParser() {
-		
+		HashMap_Op();
+		HashMap_Funct();
 	}
 	
 	public static CodeParser getInstance() {
@@ -46,6 +47,11 @@ public class CodeParser {
 		return bitField;		
 	}
 
+	
+	public String snipBits(String bitField, int targetLength) {
+		
+		return bitField.substring(16);
+	}
 
 
 	//Converts string value of register to corresponding int value
@@ -55,10 +61,10 @@ public class CodeParser {
 
 		// make sure no trailing/leading white space
 		reg = reg.trim();
-		String tempString = reg.substring(2);
+		String tempString = reg.substring(1);
 
 		//finds starting index for registers based on letter
-		switch(reg.charAt(1))
+		switch(reg.charAt(0))
 		{
 	        	// Zero Register
 	        case 'z':
@@ -71,9 +77,8 @@ public class CodeParser {
 	            break;
 	
 	        // at register or Function Argument
-		        case 'a':
-		        	System.out.println("Case A executing:   " + tempString);
-		            if (reg.charAt(2)== 't')
+		        case 'a':  
+		            if (reg.charAt(1)== 't')
 		                val = 1;
 		            else
 		                val = 4 + Integer.parseInt(tempString);
@@ -89,7 +94,7 @@ public class CodeParser {
 	
 		        // Either Stack Pointer of Saved Registers
 		        case 's':
-		            if (reg.charAt(2) == 'p')
+		            if (reg.charAt(1) == 'p')
 		                val = 29;
 		            else
 		                val = 16 + Integer.valueOf(tempString);
@@ -124,17 +129,17 @@ public class CodeParser {
 		hashMap_op = new HashMap<>();
 		
 		//Intializing HashMap Key/Values
-		hashMap_op.put("J", 2);
-		hashMap_op.put("BEQ", 4);
-		hashMap_op.put("ADD", 0);
-		hashMap_op.put("ADDI", 8);
-		hashMap_op.put("SUB", 9);
-		hashMap_op.put("SW", 43); // 32 + 11 = 43 (0x2b)
-		hashMap_op.put("LW", 35); // 32 + 3 = 35	(0x23)
-		hashMap_op.put("SLL", 0);
-		hashMap_op.put("SRL", 0);
-		hashMap_op.put("MUL", 28); //16 + 12 = 28 (0x1c)
-		hashMap_op.put("AND", 0);	
+		hashMap_op.put("j", 2);
+		hashMap_op.put("beq", 4);
+		hashMap_op.put("add", 0);
+		hashMap_op.put("addi", 8);
+		hashMap_op.put("sub", 0);
+		hashMap_op.put("sw", 43); // 32 + 11 = 43 (0x2b)
+		hashMap_op.put("lw", 35); // 32 + 3 = 35	(0x23)
+		hashMap_op.put("sll", 0);
+		hashMap_op.put("srl", 0);
+		hashMap_op.put("mul", 28); //16 + 12 = 28 (0x1c)
+		hashMap_op.put("and", 0);	
 	}
 	
 	// Hashmap for Funct Values 
@@ -142,18 +147,18 @@ public class CodeParser {
 	public void HashMap_Funct()
 	{
 		hashMap_funct = new HashMap<>();
-		hashMap_funct.put("ADD", 0x20);
-		hashMap_funct.put("SUB", 0x22);
-		hashMap_funct.put("SLL", 0);
-		hashMap_funct.put("SRL", 2);
-		hashMap_funct.put("AND", 0x24);
-		hashMap_funct.put("OR", 0x25);
+		hashMap_funct.put("add", 0x20);
+		hashMap_funct.put("sub", 0x22);
+		hashMap_funct.put("sll", 0);
+		hashMap_funct.put("srl", 2);
+		hashMap_funct.put("and", 0x24);
+		hashMap_funct.put("or", 0x25);
 	}	
 	
 	//Identifies labels from assembly file and sets a Hashmap with <Label,memIndex>
 	public static void parseLabels() throws FileNotFoundException
 	{
-		Scanner file = new Scanner (new File ("C:\\eclipse\\EclipseWorkspace\\Parsing_MIPS\\assembly_demo.txt"));
+		Scanner file = new Scanner (new File ("C:\\Users\\Ben\\Documents\\GitHub\\MipsSimulatorEclipse\\MipsSimulator\\src\\assembly_demo.txt"));
 		int memIndex = 0;
 		while (file.hasNext())
 		{
@@ -168,12 +173,12 @@ public class CodeParser {
 		file.close();
 	}
 	
-	public Queue<Integer> parseCode() throws FileNotFoundException
+	public Queue<Long> parseCode() throws FileNotFoundException
 	{
 		
-		Scanner file = new Scanner (new File ("C:\\eclipse\\EclipseWorkspace\\Parsing_MIPS\\assembly_demo.txt"));
+		Scanner file = new Scanner (new File ("C:\\Users\\Ben\\Documents\\GitHub\\MipsSimulatorEclipse\\MipsSimulator\\src\\assembly.txt"));
 			
-		Queue<Integer> instructions = new LinkedList<>(); 
+		Queue<Long> instructions = new LinkedList<>(); 
 		
 		//Binary Strings for final conversion
 		String BinaryOP;
@@ -194,16 +199,21 @@ public class CodeParser {
 			
 			//Psuedo Address Identifier
 			String temp = lineInstruction.split(":")[0];
-			if (temp.length() != lineInstruction.length())
-			{
-				lineInstruction = lineInstruction.split(":")[1];
-			}
 			
-			String[] split = lineInstruction.split("^[A-Za-z0-9]+");
+
+//			if (temp.length() != lineInstruction.length())
+//			{
+//				lineInstruction = lineInstruction.split(":")[1];
+//			}
+//			
+			String[] split = lineInstruction.split("[^A-Za-z0-9-]+");
+
 			String opString = split[0];
 			int tempInstruction[] = {0,0,0,0,0,0};
 			
 			//HashMap<token[i],Integer> hashMap = new HashMap;
+
+
 			int opcode = hashMap_op.get(opString);
 			
 			//Choosing between R, I, J type
@@ -213,11 +223,11 @@ public class CodeParser {
 			{	
 				switch (opString)
 				{
-					case "ADD":
-					case "SUB":
-					case "AND":
-					case "OR":
-					case "MUL":
+					case "add":
+					case "sub":
+					case "and":
+					case "or":
+					case "mul":
 					{
 						tempInstruction[0] = 0;
 						tempInstruction[1] = getRegFromStr(split[2]);
@@ -228,8 +238,8 @@ public class CodeParser {
 					}
 					break;
 						
-					case "SLL" :
-					case "SRL" :
+					case "sll" :
+					case "srl" :
 					{
 						tempInstruction[0] = 0;
 						tempInstruction[1] = 0;
@@ -247,23 +257,29 @@ public class CodeParser {
 				BinarySHAMT = Integer.toBinaryString(tempInstruction[4]);
 				BinaryFUNCT = Integer.toBinaryString(tempInstruction[5]);
 				
+				
+				
 				BinaryOP = appendBit(BinaryOP, 6);
 				BinaryFUNCT = appendBit(BinaryFUNCT, 6);
 				BinaryRS = appendBit(BinaryRS, 5);
 				BinaryRT = appendBit(BinaryRT, 5);
 				BinaryRD = appendBit(BinaryRD, 5);
 				BinarySHAMT = appendBit(BinarySHAMT, 5);
-					
+				
+				
+				
 				FullBinary.append(BinaryOP);
+				
 				FullBinary.append(BinaryRS);
 				FullBinary.append(BinaryRT);
 				FullBinary.append(BinaryRD);
 				FullBinary.append(BinarySHAMT);
 				FullBinary.append(BinaryFUNCT);
 				
+
 				String instructionBinary = FullBinary.toString();
 				
-				instructions.add(Integer.parseInt(instructionBinary, 2));
+				instructions.add(Long.parseLong(instructionBinary, 2));
 				
 			}
 			
@@ -285,19 +301,28 @@ public class CodeParser {
 				FullBinary.append(BinaryLABEL);
 				
 				String instructionBinary = FullBinary.toString();
-				instructions.add(Integer.parseInt(instructionBinary, 2));
+				instructions.add(Long.parseLong(instructionBinary, 2));
 			}
 				
 			//I-type Parser
-			else if (opcode == 1 || opcode > 3 && opcode < 28 || opcode > 28 && opcode < 63) //Excluding MUL OPCODE (28) 
+			else if (opcode == 1 || (opcode > 3 && opcode < 28) || (opcode > 28 && opcode < 63)) //Excluding MUL OPCODE (28) 
 			{
 				
 				int tempInstruct_I[] = {0,0,0,0};
 				
 				tempInstruct_I[0] = opcode;
-				tempInstruct_I[1] = getRegFromStr(split[1]);
-				tempInstruct_I[2] = getRegFromStr(split[2]);
-				tempInstruct_I[3] = Integer.parseInt(split[3]);
+				if(split[0].equals("sw") ||  split[0].equals("lw")) {
+					tempInstruct_I[1] = getRegFromStr(split[3]);
+					tempInstruct_I[3] = Integer.parseInt(split[2]);
+					
+				}
+				else {
+					tempInstruct_I[1] = getRegFromStr(split[2]);
+					tempInstruct_I[3] = Integer.parseInt(split[3]);
+				}
+				tempInstruct_I[2] = getRegFromStr(split[1]);
+				
+	
 				
 				BinaryOP = Integer.toBinaryString(tempInstruct_I[0]);
 				BinaryRS = Integer.toBinaryString(tempInstruct_I[1]);
@@ -307,31 +332,49 @@ public class CodeParser {
 				BinaryOP = appendBit(BinaryOP, 6);
 				BinaryRS = appendBit(BinaryRS, 5);
 				BinaryRT = appendBit(BinaryRT, 5);
-				BinaryIM = appendBit(BinaryIM, 16);
+				
+				//Snips if it is a negative number, but it will take up a ton of bits
+				if(tempInstruct_I[3] >= 0) 
+					BinaryIM = appendBit(BinaryIM, 16);
+				else
+					BinaryIM = snipBits(BinaryIM, 16);
 					
+				
 				FullBinary.append(BinaryOP);
 				FullBinary.append(BinaryRS);
 				FullBinary.append(BinaryRT);
 				FullBinary.append(BinaryIM);
+				
 	
 				String instructionBinary = FullBinary.toString();
-				instructions.add(Integer.parseInt(instructionBinary, 2));
 				
+				instructions.add(Long.parseLong(instructionBinary, 2));
+				
+				
+				
+				Long x = Long.parseLong(instructionBinary, 2);
+				
+				
+				
+				String longBinary = Long.toBinaryString(x);
 				
 			}
 			memIndex++;
 		}
 		
+		file.close();
 		return instructions;
 	
 	}
 
 
-	public Instruction parseInstruction (int intNUM)
+	public Instruction parseInstruction (long intNUM)
 	{
 		
-		String fullBinary = Integer.toBinaryString(intNUM);
-		String binaryOP = fullBinary.substring(0, 5);
+		String fullBinary = Long.toBinaryString(intNUM);
+		fullBinary = appendBit(fullBinary, 32);
+		
+		String binaryOP = fullBinary.substring(0, 6);
 		int opcode = Integer.parseInt(binaryOP, 2);
 		
 		if (opcode == 0)
@@ -339,11 +382,11 @@ public class CodeParser {
 			String binArray[] = {"-1","-1","-1","-1","-1","-1"};
 			int intArray[] = {0, 0, 0, 0, 0, 0}; 
 			binArray[0] = binaryOP;
-			binArray[1] = fullBinary.substring(6, 10);
-			binArray[2] = fullBinary.substring(11, 15);
-			binArray[3] = fullBinary.substring(16, 20);
-			binArray[4] = fullBinary.substring(21, 25);
-			binArray[5] = fullBinary.substring(26, 31);
+			binArray[1] = fullBinary.substring(6, 11);
+			binArray[2] = fullBinary.substring(11, 16);
+			binArray[3] = fullBinary.substring(16, 21);
+			binArray[4] = fullBinary.substring(21, 26);
+			binArray[5] = fullBinary.substring(26, 32);
 			for (int i = 0; i < intArray.length; i++)
 			{
 				intArray[i] = Integer.parseInt(binArray[i], 2);
@@ -356,12 +399,12 @@ public class CodeParser {
 			String binArray[] = {"-1","-1","-1","-1","-1","-1"};
 			int intArray[] = {0, 0, 0, 0, 0, 0}; 
 			binArray[0] = binaryOP;
-			binArray[1] = fullBinary.substring(6, 31);
+			binArray[1] = fullBinary.substring(6, 32);
 			for (int i = 0; i < intArray.length; i++)
 			{
 				intArray[i] = Integer.parseInt(binArray[i], 2);
 			}
-			return new Instruction(Instruction.RTYPE, intArray);
+			return new Instruction(Instruction.JTYPE, intArray);
 		}
 		
 		
@@ -370,14 +413,18 @@ public class CodeParser {
 			String binArray[] = {"-1","-1","-1","-1"};
 			int intArray[] = {0, 0, 0, 0}; 
 			binArray[0] = binaryOP;
-			binArray[1] = fullBinary.substring(6, 10);
-			binArray[2] = fullBinary.substring(11, 15);
-			binArray[3] = fullBinary.substring(16, 31);
+			binArray[1] = fullBinary.substring(6, 11);
+			binArray[2] = fullBinary.substring(11, 16);
+			binArray[3] = fullBinary.substring(16, 32);
 			for (int i = 0; i < intArray.length; i++)
 			{
-				intArray[i] = Integer.parseInt(binArray[i], 2);
+				intArray[i] = (short)Integer.parseInt(binArray[i], 2);
+				
 			}
-			return new Instruction(Instruction.JTYPE, intArray);
+			
+			
+				
+			return new Instruction(Instruction.ITYPE, intArray);
 		}
 		
 		// TODO: Add handling for when op-code isn't matched.

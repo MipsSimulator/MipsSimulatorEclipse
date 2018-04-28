@@ -1,5 +1,8 @@
 package Model;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
 * Model in the MVC architecture
 * The Main Memory Model holds the state of the Assembly Simulator
@@ -11,11 +14,22 @@ public class MainMemoryModel extends AbstractModel {
     */
    private static MainMemoryModel memoryModel;
    
+   
+   /**
+	 * The addresses of the last 10 accessed memory locations.
+	 */
+	private Queue<Integer> memAddresses;
+	
+	/**
+	 * The values of the last 10 accessed memory locations.
+	 */
+	private Queue<Long> memValues;
+   
    /**
     * The main memory. Access is allowed only at every word, which is 32 bits.
     * This is why the data type is a byte.
     */
-   private int[] mainMemory;
+   private long[] mainMemory;
 
    /**
     * Addressable size of Main Memory. Main memory is 8mb by default.
@@ -39,6 +53,11 @@ public class MainMemoryModel extends AbstractModel {
     * Size of the text segment is 4mb. 4718592 - 1024*1024*4 or 4mb = 524288
     */
    public static final int TEXT_BOTTOM_ADDRESS = 524288;
+   
+   /**
+    * Number of instructions to track at a time for the debugger. (Memory access.. lw/sw)
+    */
+   public static final int INSTRUCTIONS_TO_TRACK = 10;
 
    /**
     * When the program gets built, this will be set to the address of the last instruction in memory.
@@ -52,8 +71,11 @@ public class MainMemoryModel extends AbstractModel {
     */
    private MainMemoryModel() {
 
-       memoryModel = new MainMemoryModel();
-       mainMemory = new int[MEMORY_SIZE];
+       mainMemory = new long[MEMORY_SIZE];
+       
+       memAddresses = new LinkedList<>();
+       memValues = new LinkedList<>();
+       
 
    }
 
@@ -101,7 +123,38 @@ public class MainMemoryModel extends AbstractModel {
     * @param memoryAddress
     * @return data at that memory address in the form of an int.
     */
-   public int loadMemory(int memoryAddress) { return mainMemory[memoryAddress]; }
+   public long loadMemory(int memoryAddress) {
+	   
+	   if(memAddresses.size() == 10) {
+		   memAddresses.poll();
+		   memValues.poll();
+	   }
+	   
+	   memAddresses.add(memoryAddress);
+	   memValues.add(mainMemory[memoryAddress]);
+	   
+	   return mainMemory[memoryAddress]; 
+	   
+   }
+   
+   /**
+    * [Read Only] Used to fetch instructions in main memory at the given memory address.
+    * This is only used to fetch instructions. It will not record memory changes for the
+    * debugger.
+    * @param memoryAddress
+    * @return data at that memory address in the form of an int.
+    */
+   public long loadInstruction(int memoryAddress) { return mainMemory[memoryAddress]; }
+   
+   
+   
+   /**
+    * [Write Only] used to write instructions to memory at the given address. These operations
+    * do not appear in the debugger.
+    * @param memoryAddress - 32bit word addressable
+    * @param value - value to be stored at the given memoryAddress
+    */
+   public void storeInstruction(int memoryAddress, long value) { mainMemory[memoryAddress] = value;  }
    
    
    /**
@@ -110,7 +163,29 @@ public class MainMemoryModel extends AbstractModel {
     * @param memoryAddress - 32bit word addressable
     * @param value - value to be stored at the given memoryAddress
     */
-   public void storeMemory(int memoryAddress, int value) { mainMemory[memoryAddress] = value; }
+   public void storeMemory(int memoryAddress, long value) {
+	   
+	   if(memAddresses.size() == 10) {
+		   memAddresses.poll();
+		   memValues.poll();
+	   }
+	   
+	   // The actual store operation
+	   mainMemory[memoryAddress] = value; 
+	   
+	   memAddresses.add(memoryAddress);
+	   memValues.add(mainMemory[memoryAddress]);
+	   
+   }
+   
+   
+   public Queue<Integer> getRecentAddresses() {
+	   return memAddresses;
+   }
+   
+   public Queue<Long> getRecentValues(){
+	   return memValues;
+   }
    
 
 }

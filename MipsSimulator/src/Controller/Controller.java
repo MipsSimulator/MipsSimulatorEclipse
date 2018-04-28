@@ -57,7 +57,7 @@ public class Controller {
 	
 		// Builds the program. Stores the instructions in memory.
 		if(operation.equals("build")) {
-			Queue<Integer> instructions;
+			Queue<Long> instructions;
 			try {
 				instructions = codeParser.parseCode();
 				executor.build(instructions);

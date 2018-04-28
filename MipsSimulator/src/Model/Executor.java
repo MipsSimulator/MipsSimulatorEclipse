@@ -111,7 +111,6 @@ public class Executor {
 		int rt = instruction[2];
 		int imm = instruction[3];
 		
-		
 		switch(op)
 		{
 		// BEQ instruction
@@ -131,12 +130,12 @@ public class Executor {
 			
 		// LW instruction
 		case 35:
-			lw(rs, rt, imm);
+			lw(rt, rs, imm);
 			break;
 					
 		// SW instruction
-		case 42:
-			sw(rs, rt, imm);
+		case 43:
+			sw(rt, rs, imm);
 			break;
 			
 		}
@@ -199,7 +198,7 @@ public class Executor {
 		if (register.getRegister(rs) == register.getRegister(rt))
 		{
 			// needs to change program counter
-			register.setPc(register.getPc() + imm * 4);
+			register.setPc(register.getPc() + imm);
 		}
 	}
 	
@@ -269,7 +268,7 @@ public class Executor {
 	 * @param rt 
 	 * @param imm
 	 */
-	private void addi(int rt, int rs, int imm)
+	private void addi(int rs, int rt, int imm)
 	{
 		rs = register.getRegister(rs);
 		register.setRegister(rs + imm, rt);
@@ -285,7 +284,7 @@ public class Executor {
 	{
 		int lval;
 		rs = register.getRegister(rs);
-		lval = memory.loadMemory(rs + imm);
+		lval = (int)memory.loadMemory(rs + imm); // maybe have to change
 		register.setRegister(lval, rt);
 	}
 
@@ -299,6 +298,7 @@ public class Executor {
 	{
 		rt = register.getRegister(rt);
 		rs = register.getRegister(rs);
+	
 		memory.storeMemory(rs + imm, rt);
 	}
 	
@@ -311,6 +311,11 @@ public class Executor {
 	}
 	
 	
+	private void li(int imm) {
+		
+	}
+	
+	
 	/**
 	 * Builds the code; Stores the instructions in the Main Memory Model, at the bottom of
 	 * the text segment. Note the actual pc doesn't get updated, this is just to have a temporary pointer
@@ -318,14 +323,15 @@ public class Executor {
 	 * @param instructions - array of instructions as ints. Needs to be converted to binary to decode
 	 * the instruction.
 	 */
-	public void build(Queue<Integer> instructions) {
+	public void build(Queue<Long> instructions) {
 		int pc = register.getPc();
 		
 		int size = instructions.size();
 		// copy of program counter is incremented every iteration to store instruction at the next
 		// address
 		for(int i = 0; i<size; i++, pc++) {
-			memory.storeMemory(pc,instructions.poll());
+			memory.storeInstruction(pc,instructions.poll());
+			memory.setLastInstrAddress(pc);
 		}
 		
 	}
@@ -390,7 +396,7 @@ public class Executor {
 	public void executeInstruction() {
 		
 		int pc = register.getPc();
-		Instruction instruction = codeParser.parseInstruction(memory.loadMemory(pc));
+		Instruction instruction = codeParser.parseInstruction(memory.loadInstruction(pc));
 		
 		/**
 		 * Execute R, I, or J type instructions
@@ -399,9 +405,11 @@ public class Executor {
 			
 			case Instruction.RTYPE: 
 				executeR(instruction.getInstruction());
+				register.setPc(register.getPc()+1);
 				break;
 			case Instruction.ITYPE:
 				executeI(instruction.getInstruction());
+				register.setPc(register.getPc()+1);
 				break;
 			case Instruction.JTYPE:
 				executeJ(instruction.getInstruction());

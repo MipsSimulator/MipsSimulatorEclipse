@@ -114,6 +114,9 @@ public class RegisterModel extends AbstractModel{
     * @param memoryAddress
     */
    public void setSp(int memoryAddress) {this.registerFile[29] = memoryAddress; }	
+   
+   
+   public int[] getRegisterFile() { return registerFile;}
 	
 	
 	

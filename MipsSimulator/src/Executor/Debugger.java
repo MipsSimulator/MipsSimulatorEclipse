@@ -1,5 +1,8 @@
 package Executor;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import CodeParser.CodeParser;
 import Model.Executor;
 import Model.MainMemoryModel;
@@ -41,7 +44,7 @@ public class Debugger {
 	
 	public void breakPoint(int breakPoint) {
 		
-		this.breakPoint = breakPoint;
+		this.breakPoint = breakPoint + registerModel.getPc();
 		compile();
 		update();
 		
@@ -76,8 +79,8 @@ public class Debugger {
 		int lastInstrAddress = memory.getLastInstrAddress();
 		
 		// Loop and constraints of program execution
-		while(executor.isExecuting() && registerModel.getPc() < lastInstrAddress && registerModel.getPc() < breakPoint) {
-			
+		while(executor.isExecuting() && registerModel.getPc() <= lastInstrAddress && registerModel.getPc() < breakPoint) {
+			System.out.println("Executing Instruction...");
 			executor.executeInstruction();
 		}
 		
@@ -87,6 +90,26 @@ public class Debugger {
 	
 	
 	public void update() {
+		
+		DebugEvent debugEvent = new DebugEvent(registerModel.getRegisterFile(),memory.getRecentValues(),
+				memory.getRecentAddresses());
+		
+		Queue<Long> q = debugEvent.getMemValues();
+		Queue<Integer> q2 = debugEvent.getMemAddresses();
+		
+		System.out.println("10 Most recently accessed addresses");
+		while(!q.isEmpty()) {
+			System.out.print(q2.poll() + "     ");
+			System.out.println(q.poll());
+			
+		}
+		System.out.println("Register File:");
+			for(int i = 0; i<debugEvent.getRegisterState().length; i++) {
+				System.out.println("Register " + i + ": " + debugEvent.getRegisterState()[i]);
+			}
+		
+		
+		
 		
 		// Create and send a new debug event to the view to update some table that the user would see.
 		

@@ -1,7 +1,8 @@
 package Model;
-import java.awt.Event;
+
 import java.util.ArrayList;
 
+import Executor.DebugEvent;
 import View.*;
 
 import java.util.ArrayList;
@@ -46,9 +47,9 @@ abstract public class AbstractModel {
      * @param event A ModelEvent containing information about the change that
      * occurred in the model. ,
      */
-    public void notifyChanged(Event event){
+    public void notifyChanged(DebugEvent event){
         for(ModelListener listener: listeners){
-//            listener.update(event);
+        	listener.update(event);
         }
     }
    

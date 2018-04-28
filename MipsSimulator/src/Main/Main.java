@@ -1,5 +1,9 @@
 package Main;
 
+import java.io.FileNotFoundException;
+import java.util.Queue;
+
+import CodeParser.CodeParser;
 import Controller.Controller;
 
 public class Main {
@@ -9,7 +13,12 @@ public class Main {
 		Controller controller = new Controller();
 		
 		controller.operation("build");
-		controller.operation("compile");
-	}
+		controller.operation("breakpoint");
+		System.out.println("And then finish executing....");
+		controller.operation("continue");
 
+
+
+	}
+	
 }

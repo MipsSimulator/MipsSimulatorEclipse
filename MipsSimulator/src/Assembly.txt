@@ -1,0 +1,12 @@
+addi $t0, $t2, 16
+add $t6, $t3, $t0
+sw $t0, 0($sp)
+lw $t1, 0($sp)
+addi $t0, $t2, 16
+addi $t2, $t0, 16
+addi $t0, $t2, -200
+addi $t2, $t0, 16
+addi $t0, $t2, 40
+addi $t0, $t2, 16
+sw $t0, -4($sp)
+lw $t5, -4($sp)
