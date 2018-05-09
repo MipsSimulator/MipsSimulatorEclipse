@@ -1,0 +1,8 @@
+	add $t1, $t2, $t3
+	sub $t1, $t2, $t3
+loop: 	and $t1, $t2, $t3, awefaseef
+	sw $t1, (0)$t4
+	lw $t2, (0)$a3
+	j loop
+loop2:	add $t, $t2, $t3
+	sub $t1, $t2, $t0
